@@ -37,23 +37,14 @@ public class AppForm extends Frame{ //Форма основного класса
         File  fl=new File("tmpserial");//Проверяем, есть ли файл с записанными объектами
         if (fl.exists())
         {tf.setText("FileExists");
-          DialogBox d= new DialogBox();//Создаем новую форму на базе класса DialogBox
           try{ 
-            fis= new FileInputStream("tmpserial");//Создание потоковой переменной для низкоуровневого ввода
-            ois=new ObjectInputStream(fis);//Создание потоковой переменной для высокоуровневого ввода
-            d.bexitD= (Button) ois.readObject();  //Читаем на новую форму объекты. При чтении выполняем приведение типа
-            d.bexitD.setBounds(10,30,100,20);
-            d.add(d.bexitD);
-            d.b_serializeD=(Button) ois.readObject();
-            d.b_serializeD.setBounds(10,50,100,20);
-            d.add(d.b_serializeD); 
-            d.b_deserializeD=(Button) ois.readObject();
-            d.b_deserializeD.setBounds(10,70,100,20);
-            d.add(d.b_deserializeD); 
-            d.tfD=(TextField) ois.readObject();
-            d.tfD.setBounds(10,90,100,20);
-            d.add(d.tfD); 
-            d.show();//Отображаем новую форму
+            fis = new FileInputStream("tmpserial");//Создание потоковой переменной для низкоуровневого ввода
+            ois = new ObjectInputStream(fis);//Создание потоковой переменной для высокоуровневого ввода
+            AppForm[] taskArray = (AppForm[]) ois.readObject();
+            for(int i = 0; i<2; i++){ 
+              taskArray[i].setBounds(((i+1)*2)*200,200,200,200);
+              taskArray[i].show();
+            }
             fis.close();//Закрываем поток для ввода
             return true;
           }
@@ -63,15 +54,22 @@ public class AppForm extends Frame{ //Форма основного класса
         {tf.setText("FileNitExists");}
         return true;}
       else
+        ///********************************///
+        ///************THE TASK**************//
         if (evt.target==b_serialize)//Активировано событие сериализации
         {
+          AppForm[] taskArray = new AppForm[2];
           try{ 
+            AppForm testForm1 = new AppForm("TEST1");
+            AppForm testForm2 = new AppForm("TEST2");
+            testForm1.tf.setText("TEST1");
+            testForm2.tf.setText("TEST2");
             fos= new FileOutputStream("tmpserial");
             oos=new ObjectOutputStream(fos);//Запись в файл кнопок и текстового поля
-            oos.writeObject(bexit);  
-            oos.writeObject(b_serialize);
-            oos.writeObject(b_deserialize);
-            oos.writeObject(tf);
+
+            taskArray[0] = testForm1;
+            taskArray[1] = testForm2;
+            oos.writeObject(taskArray);  
             fos.close();
             return true;
           }
